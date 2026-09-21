@@ -1,0 +1,1105 @@
+<!doctype html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Coastal Utility Hub | AI Control</title>
+    <style>
+        :root {
+            --ink: #102a32;
+            --muted: #6a8184;
+            --paper: #f4f7f3;
+            --surface: #ffffff;
+            --line: #d9e5df;
+            --teal: #126e70;
+            --teal-soft: #d9efea;
+            --coral: #e56d51;
+            --amber: #e6a53b;
+            --blue: #3d78a8;
+            --green: #2e906e;
+            --shadow: 0 14px 35px rgba(16, 42, 50, .08);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            color: var(--ink);
+            background: var(--paper);
+            font-family: "Avenir Next", "Trebuchet MS", sans-serif;
+            letter-spacing: 0;
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 248px;
+            flex: 0 0 248px;
+            background: #103b43;
+            color: #e9f4ee;
+            padding: 26px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 0 9px;
+        }
+
+        .brand-mark {
+            width: 70px;
+            height: 70px;
+            border-radius: 14px;
+            background: #fff;
+            display: block;
+            object-fit: cover;
+            object-position: center;
+            padding: 0;
+        }
+
+        .brand strong {
+            display: block;
+            font-size: 15px;
+            letter-spacing: .05em;
+        }
+
+        .brand span {
+            display: block;
+            color: #9bc0ba;
+            font-size: 11px;
+            margin-top: 3px;
+        }
+
+        .nav {
+            display: grid;
+            gap: 7px;
+        }
+
+        .nav button {
+            border: 0;
+            color: #a9c7c1;
+            background: transparent;
+            text-align: left;
+            padding: 12px 13px;
+            border-radius: 9px;
+            font-size: 13px;
+            display: flex;
+            gap: 11px;
+            align-items: center;
+        }
+
+        .nav button.active,
+        .nav button:hover {
+            color: #fff;
+            background: #19545b;
+        }
+
+        .nav i {
+            width: 18px;
+            font-style: normal;
+            color: #e7ad63;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .sidebar-foot {
+            margin-top: auto;
+            padding: 15px;
+            border: 1px solid #27626a;
+            border-radius: 10px;
+            background: #14464e;
+        }
+
+        .sidebar-foot small {
+            color: #91b9b2;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+        }
+
+        .sidebar-foot strong {
+            display: block;
+            margin-top: 8px;
+            font-size: 14px;
+        }
+
+        .sidebar-foot span {
+            color: #b8d3cd;
+            font-size: 11px;
+            display: block;
+            margin-top: 4px;
+        }
+
+        .main {
+            flex: 1;
+            min-width: 0;
+            padding: 25px 30px 38px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .eyebrow {
+            color: var(--teal);
+            font-weight: 800;
+            font-size: 11px;
+            letter-spacing: .13em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            font-family: Georgia, serif;
+            font-size: clamp(28px, 3vw, 42px);
+            line-height: 1;
+            letter-spacing: 0;
+            margin: 8px 0 8px;
+            font-weight: 500;
+        }
+
+        .topbar p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .date-pill,
+        .ghost-btn {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            color: var(--muted);
+            padding: 10px 12px;
+            font-size: 12px;
+        }
+
+        .ghost-btn:hover {
+            border-color: var(--teal);
+            color: var(--teal);
+        }
+
+        .live {
+            display: flex;
+            gap: 7px;
+            align-items: center;
+            color: var(--green);
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .live::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            background: var(--green);
+            border-radius: 50%;
+            box-shadow: 0 0 0 4px #d8eee5;
+        }
+
+        .kpis {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 13px;
+            margin-bottom: 18px;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 11px;
+            box-shadow: var(--shadow);
+        }
+
+        .kpi {
+            padding: 17px 18px;
+            min-height: 126px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi::after {
+            content: "";
+            position: absolute;
+            right: -22px;
+            bottom: -32px;
+            width: 95px;
+            height: 95px;
+            border: 17px solid var(--teal-soft);
+            border-radius: 50%;
+            opacity: .65;
+        }
+
+        .kpi-label {
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+        }
+
+        .kpi-value {
+            font-size: 27px;
+            font-weight: 800;
+            margin-top: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .kpi-meta {
+            color: var(--green);
+            font-size: 11px;
+            margin-top: 5px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .kpi-meta.warn {
+            color: var(--amber);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.45fr) minmax(330px, .85fr);
+            gap: 17px;
+        }
+
+        .section-card {
+            padding: 20px;
+        }
+
+        .section-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .section-head h2 {
+            margin: 0;
+            font-size: 16px;
+            letter-spacing: 0;
+        }
+
+        .section-head p {
+            margin: 5px 0 0;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .select {
+            border: 1px solid var(--line);
+            border-radius: 7px;
+            padding: 7px 9px;
+            color: var(--teal);
+            background: #f7fbf8;
+            font-size: 11px;
+        }
+
+        .chart-wrap {
+            height: 215px;
+            position: relative;
+        }
+
+        .chart-wrap svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        .chart-label {
+            fill: #8ba1a2;
+            font-size: 10px;
+            font-family: "Avenir Next", sans-serif;
+        }
+
+        .legend {
+            display: flex;
+            gap: 17px;
+            color: var(--muted);
+            font-size: 11px;
+            margin-top: 8px;
+        }
+
+        .legend span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .key {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .key.solar {
+            background: var(--amber);
+        }
+
+        .key.load {
+            background: var(--teal);
+        }
+
+        .ai-card {
+            background: #103b43;
+            color: #edf7ef;
+            border: 0;
+        }
+
+        .ai-card .section-head p {
+            color: #9cc0b9;
+        }
+
+        .ai-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 13px;
+            background: #174c54;
+            border: 1px solid #28636a;
+            border-radius: 8px;
+            margin-bottom: 17px;
+        }
+
+        .ai-status strong {
+            font-size: 13px;
+        }
+
+        .ai-status small {
+            display: block;
+            margin-top: 4px;
+            color: #9cc0b9;
+            font-size: 10px;
+        }
+
+        .status-chip {
+            color: #9de1bc;
+            font-size: 11px;
+            font-weight: 800;
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .status-chip::before {
+            content: "";
+            width: 7px;
+            height: 7px;
+            background: #76d49e;
+            border-radius: 50%;
+        }
+
+        .ai-reco {
+            border-left: 3px solid var(--coral);
+            padding: 2px 0 2px 13px;
+            margin: 15px 0 19px;
+        }
+
+        .ai-reco label {
+            color: #e7ad63;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+        }
+
+        .ai-reco p {
+            font-family: Georgia, serif;
+            font-size: 18px;
+            line-height: 1.25;
+            margin: 8px 0 0;
+        }
+
+        .confidence {
+            display: flex;
+            justify-content: space-between;
+            color: #9cc0b9;
+            font-size: 10px;
+            margin-top: 12px;
+        }
+
+        .confidence-bar {
+            height: 5px;
+            background: #28636a;
+            border-radius: 8px;
+            margin-top: 7px;
+            overflow: hidden;
+        }
+
+        .confidence-bar span {
+            display: block;
+            height: 100%;
+            width: 86%;
+            border-radius: 8px;
+            background: var(--coral);
+        }
+
+        .ai-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .primary-btn,
+        .outline-btn {
+            border-radius: 7px;
+            padding: 10px 12px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .primary-btn {
+            background: var(--coral);
+            color: white;
+            border: 1px solid var(--coral);
+        }
+
+        .outline-btn {
+            background: transparent;
+            color: #b7d6ce;
+            border: 1px solid #39747a;
+        }
+
+        .primary-btn:hover {
+            background: #f17d60;
+        }
+
+        .outline-btn:hover {
+            border-color: #b7d6ce;
+        }
+
+        .control-card {
+            grid-column: span 1;
+        }
+
+        .mode-switch {
+            display: flex;
+            gap: 5px;
+            background: #eef5f1;
+            border-radius: 7px;
+            padding: 4px;
+        }
+
+        .mode-switch button {
+            border: 0;
+            background: transparent;
+            border-radius: 5px;
+            padding: 8px 12px;
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .mode-switch button.active {
+            background: var(--surface);
+            color: var(--teal);
+            box-shadow: 0 2px 7px rgba(16, 42, 50, .1);
+        }
+
+        .control-row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 12px;
+            align-items: center;
+            margin: 17px 0;
+        }
+
+        .control-row label {
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .control-row small {
+            display: block;
+            color: var(--muted);
+            font-size: 10px;
+            font-weight: 400;
+            margin-top: 4px;
+        }
+
+        .value {
+            color: var(--teal);
+            font-size: 13px;
+            font-weight: 800;
+            min-width: 55px;
+            text-align: right;
+        }
+
+        input[type=range] {
+            width: 100%;
+            accent-color: var(--teal);
+            margin-top: 11px;
+        }
+
+        .range-track {
+            grid-column: 1 / -1;
+        }
+
+        .control-footer {
+            border-top: 1px solid var(--line);
+            padding-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--muted);
+            font-size: 10px;
+        }
+
+        .toggle {
+            width: 37px;
+            height: 21px;
+            background: #c5d4d0;
+            border: 0;
+            border-radius: 20px;
+            padding: 3px;
+        }
+
+        .toggle span {
+            display: block;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: white;
+            transition: transform .2s;
+        }
+
+        .toggle.on {
+            background: var(--teal);
+        }
+
+        .toggle.on span {
+            transform: translateX(16px);
+        }
+
+        .inventory {
+            display: grid;
+            gap: 14px;
+        }
+
+        .inventory-item {
+            display: grid;
+            grid-template-columns: 39px 1fr auto;
+            gap: 11px;
+            align-items: center;
+        }
+
+        .inventory-icon {
+            width: 39px;
+            height: 39px;
+            border-radius: 9px;
+            display: grid;
+            place-items: center;
+            font-weight: 800;
+            color: var(--teal);
+            background: var(--teal-soft);
+            font-size: 12px;
+        }
+
+        .inventory-icon.ice {
+            color: var(--blue);
+            background: #dcecf3;
+        }
+
+        .inventory-icon.bat {
+            color: #b97724;
+            background: #faedd1;
+        }
+
+        .inventory-item strong {
+            font-size: 13px;
+            display: block;
+        }
+
+        .inventory-item small {
+            font-size: 10px;
+            color: var(--muted);
+            display: block;
+            margin-top: 3px;
+        }
+
+        .meter {
+            height: 6px;
+            background: #e5eeea;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .meter span {
+            height: 100%;
+            display: block;
+            border-radius: 8px;
+            background: var(--teal);
+        }
+
+        .meter span.ice {
+            background: var(--blue);
+        }
+
+        .meter span.bat {
+            background: var(--amber);
+        }
+
+        .inventory-item>b {
+            font-size: 14px;
+        }
+
+        .schedule {
+            grid-column: 1 / -1;
+        }
+
+        .timeline {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+        }
+
+        .slot {
+            min-height: 105px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 11px;
+            background: #fbfdfb;
+            position: relative;
+        }
+
+        .slot.now {
+            border-color: var(--coral);
+            background: #fff8f4;
+        }
+
+        .slot-time {
+            color: var(--muted);
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .slot strong {
+            display: block;
+            margin-top: 17px;
+            font-size: 12px;
+        }
+
+        .slot small {
+            display: block;
+            color: var(--muted);
+            font-size: 10px;
+            line-height: 1.4;
+            margin-top: 4px;
+        }
+
+        .slot .dot {
+            position: absolute;
+            top: 11px;
+            right: 11px;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--teal);
+        }
+
+        .slot.now .dot {
+            background: var(--coral);
+        }
+
+        .feed {
+            margin-top: 13px;
+            border-top: 1px solid var(--line);
+            padding-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .feed strong {
+            color: var(--ink);
+        }
+
+        .toast {
+            position: fixed;
+            right: 25px;
+            bottom: 25px;
+            padding: 13px 16px;
+            background: var(--ink);
+            color: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            font-size: 12px;
+            transform: translateY(20px);
+            opacity: 0;
+            pointer-events: none;
+            transition: .25s;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        @media (max-width: 1000px) {
+            .sidebar {
+                width: 205px;
+                flex-basis: 205px;
+            }
+
+            .kpis {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .schedule {
+                grid-column: auto;
+            }
+        }
+
+        @media (max-width: 680px) {
+            .app {
+                display: block;
+            }
+
+            .sidebar {
+                width: auto;
+                padding: 15px;
+                gap: 13px;
+            }
+
+            .nav {
+                display: flex;
+                overflow-x: auto;
+            }
+
+            .nav button {
+                white-space: nowrap;
+            }
+
+            .sidebar-foot {
+                display: none;
+            }
+
+            .main {
+                padding: 21px 15px 30px;
+            }
+
+            .topbar {
+                display: block;
+            }
+
+            .top-actions {
+                margin-top: 18px;
+                justify-content: space-between;
+            }
+
+            .kpis {
+                gap: 9px;
+            }
+
+            .kpi {
+                min-height: 112px;
+                padding: 14px;
+            }
+
+            .kpi-value {
+                font-size: 23px;
+                margin-top: 12px;
+            }
+
+            .timeline {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .slot:last-child {
+                grid-column: 1 / -1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <aside class="sidebar">
+            <div class="brand">
+                <img class="brand-mark" src="SEANERGY_RAYA_SEAGARA_LOGO.png" alt="Seanergy Raya logo">
+                <div><strong>SEAGARA DASHBOARD</strong><span>SEANERGY RAYA</span></div>
+            </div>
+            <nav class="nav" aria-label="Navigasi dashboard">
+                <button class="active"><i>01</i> Command center</button>
+                <button><i>02</i> Energy forecast</button>
+                <button><i>03</i> Water service</button>
+                <button><i>04</i> Cold-chain</button>
+                <button><i>05</i> Maintenance</button>
+            </nav>
+            <div class="sidebar-foot"><small>Model status</small><strong>Simulation / Base case</strong><span>Sensor
+                    gateway connected<br>Last sync: 2 min ago</span></div>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <div>
+                    <div class="eyebrow">AI resource command</div>
+                    <h1>Coastal utility hub</h1>
+                    <p>Control room untuk energi, air bersih, dan cold-chain nelayan.</p>
+                </div>
+                <div class="top-actions">
+                    <div class="live">SYSTEM LIVE</div>
+                    <div class="date-pill">20 Sep 2026 / 09:42 WITA</div><button class="ghost-btn"
+                        id="refreshBtn">Refresh data</button>
+                </div>
+            </header>
+
+            <section class="kpis" aria-label="Ringkasan performa">
+                <div class="card kpi">
+                    <div class="kpi-label">PV output sekarang</div>
+                    <div class="kpi-value" id="pvValue">38.6 kW</div>
+                    <div class="kpi-meta">+12.4% dari forecast</div>
+                </div>
+                <div class="card kpi">
+                    <div class="kpi-label">Battery state</div>
+                    <div class="kpi-value" id="socValue">78%</div>
+                    <div class="kpi-meta">7.3 kWh usable</div>
+                </div>
+                <div class="card kpi">
+                    <div class="kpi-label">Ice slurry ready</div>
+                    <div class="kpi-value" id="iceValue">72 kg</div>
+                    <div class="kpi-meta warn">3 booking pending</div>
+                </div>
+            </section>
+
+            <div class="grid">
+                <section class="card section-card">
+                    <div class="section-head">
+                        <div>
+                            <h2>Energy balance</h2>
+                            <p>Prediksi produksi versus beban operasional, 24 jam ke depan.</p>
+                        </div><select class="select" id="chartRange">
+                            <option>Today</option>
+                            <option>Tomorrow</option>
+                            <option>7 days</option>
+                        </select>
+                    </div>
+                    <div class="chart-wrap">
+                        <svg viewBox="0 0 760 215" role="img" aria-label="Grafik produksi energi surya dan beban">
+                            <g stroke="#e5eeea" stroke-width="1">
+                                <line x1="42" y1="26" x2="748" y2="26" />
+                                <line x1="42" y1="73" x2="748" y2="73" />
+                                <line x1="42" y1="120" x2="748" y2="120" />
+                                <line x1="42" y1="167" x2="748" y2="167" />
+                            </g>
+                            <g class="chart-label"><text x="7" y="30">50</text><text x="12" y="77">35</text><text x="12"
+                                    y="124">20</text><text x="18" y="171">5</text><text x="41" y="198">06</text><text
+                                    x="153" y="198">09</text><text x="270" y="198">12</text><text x="388"
+                                    y="198">15</text><text x="506" y="198">18</text><text x="624" y="198">21</text></g>
+                            <path
+                                d="M42 160 C92 159 114 153 150 133 S230 53 273 43 S346 45 390 87 S472 153 510 160 S590 164 650 165 S710 166 748 166 L748 167 L42 167 Z"
+                                fill="#e6a53b" opacity=".15" />
+                            <path
+                                d="M42 160 C92 159 114 153 150 133 S230 53 273 43 S346 45 390 87 S472 153 510 160 S590 164 650 165 S710 166 748 166"
+                                fill="none" stroke="#e6a53b" stroke-width="3" />
+                            <path
+                                d="M42 145 C94 142 118 143 154 137 S230 127 273 125 S350 121 390 124 S469 127 510 130 S590 135 650 141 S710 145 748 147"
+                                fill="none" stroke="#126e70" stroke-width="3" stroke-dasharray="5 5" />
+                            <line x1="330" y1="26" x2="330" y2="170" stroke="#e56d51" stroke-width="1"
+                                stroke-dasharray="4 4" />
+                            <circle cx="330" cy="45" r="5" fill="#e56d51" stroke="#fff" stroke-width="3" />
+                            <text x="340" y="39" class="chart-label" fill="#e56d51">now</text>
+                        </svg>
+                    </div>
+                    <div class="legend"><span><i class="key solar"></i> PV generation</span><span><i
+                                class="key load"></i> Total load</span><span style="margin-left:auto">Peak surplus:
+                            <strong style="color:var(--ink)">31.4 kW</strong></span></div>
+                </section>
+
+                <section class="card section-card ai-card">
+                    <div class="section-head">
+                        <div>
+                            <h2>AI operator</h2>
+                            <p>Forecast, optimise, lalu rekomendasikan aksi.</p>
+                        </div><span class="status-chip">ONLINE</span>
+                    </div>
+                    <div class="ai-status">
+                        <div><strong>Resource model v0.3</strong><small>Forecast confidence updated 09:40</small></div>
+                        <b style="font-size:18px">86%</b>
+                    </div>
+                    <div class="ai-reco"><label>Rekomendasi prioritas</label>
+                        <p id="recommendation">Solar surplus diprediksi tinggi. Naikkan ice slurry ke 90 kg sebelum
+                            14:00.</p>
+                        <div class="confidence"><span>Confidence score</span><span>86%</span></div>
+                        <div class="confidence-bar"><span></span></div>
+                    </div>
+                    <div class="ai-actions"><button class="primary-btn" id="applyBtn">Apply schedule</button><button
+                            class="outline-btn" id="explainBtn">Explain decision</button></div>
+                </section>
+
+                <section class="card section-card control-card">
+                    <div class="section-head">
+                        <div>
+                            <h2>Energy allocation</h2>
+                            <p>Atur prioritas beban yang dikendalikan EMS.</p>
+                        </div>
+                        <div class="mode-switch"><button class="active" data-mode="auto">AUTO</button><button
+                                data-mode="manual">MANUAL</button></div>
+                    </div>
+                    <div class="control-row">
+                        <div><label>Water treatment</label><small>Prioritas kebutuhan rumah tangga</small></div><strong
+                            class="value" id="waterAllocValue">62%</strong>
+                        <div class="range-track"><input id="waterAlloc" type="range" min="20" max="80" value="62"></div>
+                    </div>
+                    <div class="control-row">
+                        <div><label>Ice slurry production</label><small>Prioritas booking nelayan</small></div><strong
+                            class="value" id="iceAllocValue">28%</strong>
+                        <div class="range-track"><input id="iceAlloc" type="range" min="10" max="60" value="28"></div>
+                    </div>
+                    <div class="control-footer"><span>Remaining for battery + control: <strong
+                                id="remainingValue">10%</strong></span><button class="toggle on" id="emsToggle"
+                            aria-label="Toggle EMS"><span></span></button></div>
+                </section>
+
+                <section class="card section-card">
+                    <div class="section-head">
+                        <div>
+                            <h2>Resource inventory</h2>
+                            <p>Live storage and service readiness.</p>
+                        </div><span class="eyebrow" style="font-size:10px">updated 2 min ago</span>
+                    </div>
+                    <div class="inventory">
+                        <div class="inventory-item">
+                            <div class="inventory-icon">H₂O</div>
+                            <div><strong>Clean water tank</strong><small>13.8 / 20.0 m³ available</small>
+                                <div class="meter"><span style="width:69%"></span></div>
+                            </div><b>69%</b>
+                        </div>
+                        <div class="inventory-item">
+                            <div class="inventory-icon ice">ICE</div>
+                            <div><strong>Ice slurry storage</strong><small>72 / 100 kg available</small>
+                                <div class="meter"><span class="ice" style="width:72%"></span></div>
+                            </div><b>72%</b>
+                        </div>
+                        <div class="inventory-item">
+                            <div class="inventory-icon bat">SOC</div>
+                            <div><strong>LiFePO4 battery</strong><small>7.3 / 9.6 kWh nominal</small>
+                                <div class="meter"><span class="bat" style="width:78%"></span></div>
+                            </div><b>78%</b>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="card section-card schedule">
+                    <div class="section-head">
+                        <div>
+                            <h2>Today's operating schedule</h2>
+                            <p>AI-generated plan, human approval required.</p>
+                        </div><button class="ghost-btn" id="replanBtn">Re-plan day</button>
+                    </div>
+                    <div class="timeline">
+                        <div class="slot"><span class="dot"></span>
+                            <div class="slot-time">05:00 — 08:00</div><strong>Water treatment</strong><small>Minimum
+                                household reserve</small>
+                        </div>
+                        <div class="slot now"><span class="dot"></span>
+                            <div class="slot-time">08:00 — 12:00</div><strong>Dual production</strong><small>PV rising /
+                                ice booking open</small>
+                        </div>
+                        <div class="slot"><span class="dot"></span>
+                            <div class="slot-time">12:00 — 15:00</div><strong>Peak production</strong><small>Charge
+                                battery after demand</small>
+                        </div>
+                        <div class="slot"><span class="dot"></span>
+                            <div class="slot-time">15:00 — 18:00</div><strong>Cold-chain dispatch</strong><small>3
+                                vessel departures</small>
+                        </div>
+                        <div class="slot"><span class="dot"></span>
+                            <div class="slot-time">18:00 — 06:00</div><strong>Critical mode</strong><small>Storage +
+                                battery only</small>
+                        </div>
+                    </div>
+                    <div class="feed"><span><strong>AI note:</strong> No shortage predicted in the next 18
+                            hours.</span><span>Model: synthetic data / demo</span></div>
+                </section>
+            </div>
+        </main>
+    </div>
+    <div class="toast" id="toast" role="status"></div>
+    <script>
+        const toast = document.getElementById('toast');
+        let toastTimer;
+        function notify(message) {
+            toast.textContent = message;
+            toast.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.remove('show'), 2600);
+        }
+
+        const waterAlloc = document.getElementById('waterAlloc');
+        const iceAlloc = document.getElementById('iceAlloc');
+        function updateAllocation() {
+            const water = Number(waterAlloc.value);
+            const ice = Number(iceAlloc.value);
+            document.getElementById('waterAllocValue').textContent = water + '%';
+            document.getElementById('iceAllocValue').textContent = ice + '%';
+            document.getElementById('remainingValue').textContent = Math.max(0, 100 - water - ice) + '%';
+        }
+        waterAlloc.addEventListener('input', updateAllocation);
+        iceAlloc.addEventListener('input', updateAllocation);
+
+        document.querySelectorAll('[data-mode]').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('[data-mode]').forEach(item => item.classList.remove('active'));
+                button.classList.add('active');
+                const manual = button.dataset.mode === 'manual';
+                waterAlloc.disabled = !manual;
+                iceAlloc.disabled = !manual;
+                notify(manual ? 'Manual control aktif. EMS menunggu input operator.' : 'Auto mode aktif. AI kembali mengatur alokasi.');
+            });
+        });
+
+        document.getElementById('emsToggle').addEventListener('click', event => {
+            event.currentTarget.classList.toggle('on');
+            notify(event.currentTarget.classList.contains('on') ? 'EMS control enabled.' : 'EMS control paused. Critical loads tetap berjalan.');
+        });
+        document.getElementById('applyBtn').addEventListener('click', () => notify('Schedule diterapkan: ice slurry dinaikkan ke 90 kg sebelum 14:00.'));
+        document.getElementById('explainBtn').addEventListener('click', () => notify('Alasan: PV surplus 31.4 kW, battery 78%, dan 3 booking cold-chain pending.'));
+        document.getElementById('replanBtn').addEventListener('click', () => notify('AI menyusun ulang jadwal berdasarkan forecast terbaru.'));
+        document.getElementById('chartRange').addEventListener('change', event => notify('Chart view switched to ' + event.target.value + '.'));
+        document.getElementById('refreshBtn').addEventListener('click', () => {
+            document.getElementById('pvValue').textContent = '41.2 kW';
+            document.getElementById('socValue').textContent = '80%';
+            notify('Data gateway refreshed. Forecast confidence 88%.');
+        });
+    </script>
+</body>
+
+</html>
